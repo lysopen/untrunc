@@ -30,12 +30,13 @@ WizardStyle=modern
 DisableProgramGroupPage=yes
 
 [Languages]
-Name: "chinesesimplified"; MessagesFile: "compiler:Languages\ChineseSimplified.isl"
+Name: "chinesesimplified"; MessagesFile: "ChineseSimplified.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "其他选项："; Flags: unchecked
 
 [Files]
+Source: "ChineseTranslation-LICENSE-MIT.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\untrunc_zh-CN_x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]

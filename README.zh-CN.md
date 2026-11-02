@@ -33,3 +33,6 @@
 代码推送至 `master` 或 `feat/zh-cn-windows-gui` 时触发 `.github/workflows/release.yml`；也可以在 Actions 页面手动运行 Workflow。默认构建 Windows x64 便携 ZIP 与 Inno Setup 安装包，测试静默安装/卸载后上传两个 Artifact，不会自动覆盖 GitHub Release。
 
 上游仓库及原许可证：<https://github.com/anthwlock/untrunc>、[COPYING](./COPYING)。
+
+
+安装程序所用简体中文向导翻译来自 [kira-96/Inno-Setup-Chinese-Simplified-Translation](https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation)（固定提交 $sha，MIT 许可，见 installer/ChineseTranslation-LICENSE-MIT.txt）。
