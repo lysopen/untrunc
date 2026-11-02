@@ -129,8 +129,8 @@ jobs:
         run: |
           $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe").Path
           $target = Join-Path $env:RUNNER_TEMP "Untrunc-ZhCN-Install-Smoke"
-          & $setup /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- "/DIR=$target"
-          if ($LASTEXITCODE -ne 0) { throw "Silent installation failed: $LASTEXITCODE" }
+          $install = Start-Process -FilePath $setup -ArgumentList @("/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-", "/DIR=$target") -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Silent installation failed: $($install.ExitCode)" }
           foreach ($name in @("untrunc-gui.exe", "untrunc.exe", "COPYING", "README.zh-CN.md")) {
             if (-not (Test-Path (Join-Path $target $name))) { throw "Missing installed file: $name" }
           }
