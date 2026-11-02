@@ -30,7 +30,7 @@ void Gui::init() {
 	memset(&o, 0, sizeof(uiInitOptions));
 	if (uiInit(&o) != NULL) abort();
 
-	window_ = newWindow("untrunc-gui", 820, 640, 0);
+	window_ = newWindow("Untrunc 视频修复（简体中文）", 820, 640, 0);
 
 	build();
 	setSpaced(true);
@@ -65,10 +65,10 @@ void Gui::build() {
 		const char* name;
 		uiControl* (*f)(void);
 	} pages[] = {
-	    {"Repair", Gui::repairTab},
-	    {"Settings", Gui::settingsTab},
-	    {"Analyze", Gui::analyzeTab},
-	    {"About", Gui::aboutTab},
+	    {"视频修复", Gui::repairTab},
+	    {"设置", Gui::settingsTab},
+	    {"分析", Gui::analyzeTab},
+	    {"关于", Gui::aboutTab},
 	    {NULL, NULL},
     };
 
@@ -122,8 +122,8 @@ uiControl* Gui::repairTab() {
 	auto v_box = newVerticalBox();
 
 	auto h_box1 = newHorizontalBox();
-	Repair::entry_ok_ = addFileOpen(h_box1, "reference file");
-	Repair::entry_bad_ = addFileOpen(h_box1, "truncated file");
+	Repair::entry_ok_ = addFileOpen(h_box1, "参考视频");
+	Repair::entry_bad_ = addFileOpen(h_box1, "损坏视频");
 	uiBoxAppend(v_box, uiControl(h_box1), 0);
 
 	Repair::text_entry_ = uiNewMultilineEntry();
@@ -132,7 +132,7 @@ uiControl* Gui::repairTab() {
 
 	auto h_box2 = newHorizontalBox();
 	Repair::label_status_ = uiNewLabel("");
-	auto b_repair = newButton("Repair");
+	auto b_repair = newButton("视频修复");
 	uiButtonOnClicked(b_repair, startRepair, NULL);
 	//	uiBoxAppend(v_box, uiControl(b_repair), 0);
 	uiBoxAppend(h_box2, uiControl(Repair::label_status_), 1);
@@ -153,37 +153,37 @@ uiControl* Gui::repairTab() {
 uiControl* Gui::settingsTab() {
 	auto v_box = newVerticalBox();
 
-	auto group_general = newGroup("general");
+	auto group_general = newGroup("常规设置");
 	auto h_box_log = newHorizontalBox();
-	auto label_log = uiNewLabel("log level");
+	auto label_log = uiNewLabel("日志级别");
 	auto combo_log = uiNewCombobox();
-	uiComboboxAppend(combo_log, "quiet (-q)");
-	uiComboboxAppend(combo_log, "info (default)");
-	uiComboboxAppend(combo_log, "hidden warnings (-w)");
-	uiComboboxAppend(combo_log, "verbose (-v)");
-	uiComboboxAppend(combo_log, "more verbose (-vv)");
+	uiComboboxAppend(combo_log, "静默 (-q)");
+	uiComboboxAppend(combo_log, "普通（默认）");
+	uiComboboxAppend(combo_log, "隐藏警告 (-w)");
+	uiComboboxAppend(combo_log, "详细 (-v)");
+	uiComboboxAppend(combo_log, "最详细 (-vv)");
 	uiBoxAppend(h_box_log, uiControl(label_log), 0);
 	uiBoxAppend(h_box_log, uiControl(combo_log), 0);
 	uiGroupSetChild(group_general, uiControl(h_box_log));
 	uiBoxAppend(v_box, uiControl(group_general), 0);
 
-	auto group_repair = newGroup("repair");
+	auto group_repair = newGroup("修复选项");
 	auto v_box_repair = newVerticalBox();
-	auto chk_skip = uiNewCheckbox("skip unknown (-s)");
+	auto chk_skip = uiNewCheckbox("跳过未知数据 (-s)");
 
 	auto h_box_step_size = newHorizontalBox();
-	auto label_step_size = uiNewLabel("       step_size (-st)");
+	auto label_step_size = uiNewLabel("       扫描步长 (-st)");
 	auto num_step_size = uiNewSpinbox(1, 1<<16);
 	uiBoxAppend(h_box_step_size, uiControl(label_step_size), 0);
 	uiBoxAppend(h_box_step_size, uiControl(num_step_size), 0);
 
-	auto chk_stretch = uiNewCheckbox("stretch video to match audio (-sv)");
-	auto chk_keep_unknown = uiNewCheckbox("keep unknown sequences (-k)");
-	auto chk_use_dyn = uiNewCheckbox("use dynamic stats (-dyn)");
-	auto chk_rsv_ben = uiNewCheckbox("RSV recovery mode (-rsv-ben)");
+	auto chk_stretch = uiNewCheckbox("拉伸视频以匹配音频 (-sv)");
+	auto chk_keep_unknown = uiNewCheckbox("保留未知数据序列 (-k)");
+	auto chk_use_dyn = uiNewCheckbox("使用动态统计 (-dyn)");
+	auto chk_rsv_ben = uiNewCheckbox("RSV 恢复模式 (-rsv-ben)");
 
 	auto h_box_max_partsize = newHorizontalBox();
-	auto label_max_partsize = uiNewLabel("      max partsize (-mp)");
+	auto label_max_partsize = uiNewLabel("      最大分段大小 (-mp)");
 	auto num_max_partsize = uiNewEntry();
 	uiBoxAppend(h_box_max_partsize, uiControl(label_max_partsize), 0);
 	uiBoxAppend(h_box_max_partsize, uiControl(num_max_partsize), 0);
@@ -224,7 +224,7 @@ uiControl* Gui::settingsTab() {
 	uiCheckboxSetChecked(chk_stretch, g_stretch_video);
 	uiCheckboxOnToggled(chk_stretch, [](uiCheckbox* chk_box, void* data){
 		auto v = uiCheckboxChecked(chk_box);
-		if (v) msgBox("This feature is in beta, so it might not work!");
+		if (v) msgBox("该功能仍处于测试阶段，可能无法正常工作！");
 		g_stretch_video = v;
 
 	}, nullptr);
@@ -270,7 +270,7 @@ uiControl* Gui::settingsTab() {
 	g_onProgress = Gui::Analyze::onProgress; \
 	string file_ok = uiEntryText(Analyze::entry_ok_); \
 	if (file_ok.empty()) { \
-		msgBoxError("Please specify reference file!"); \
+		msgBoxError("请先选择参考视频！"); \
 		return; \
 	} \
 
@@ -289,7 +289,7 @@ uiControl* Gui::analyzeTab() {
 	auto v_box = newVerticalBox();
 
 	auto h_box1 = newHorizontalBox();
-	Analyze::entry_ok_ = addFileOpen(h_box1, "reference file");
+	Analyze::entry_ok_ = addFileOpen(h_box1, "参考视频");
 	uiBoxAppend(v_box, uiControl(h_box1), 0);
 
 	Analyze::text_entry_ = uiNewMultilineEntry();
@@ -298,10 +298,10 @@ uiControl* Gui::analyzeTab() {
 
 	auto h_box2 = newHorizontalBox();
 	auto label = uiNewLabel("");
-	auto b_dump = newButton("dump (-d)");
-	auto b_analyze = newButton("analyze (-a)");
-	auto b_atoms = newButton("atom search (-f)");
-	auto b_info = newButton("info (-i)");
+	auto b_dump = newButton("导出样本 (-d)");
+	auto b_analyze = newButton("分析 (-a)");
+	auto b_atoms = newButton("搜索 Atom (-f)");
+	auto b_info = newButton("媒体信息 (-i)");
 	uiBoxAppend(h_box2, uiControl(label), 1);
 	uiBoxAppend(h_box2, uiControl(b_dump), 0);
 	uiBoxAppend(h_box2, uiControl(b_analyze), 0);
@@ -359,7 +359,7 @@ uiControl* Gui::aboutTab() {
 	uiMultilineEntryAppend(text_entry, g_version_str.c_str());
 	uiMultilineEntryAppend(text_entry,
 						   "\n\n"
-						   "Report your issues here:\n"
+						   "问题反馈地址：\n"
 						   "https://github.com/anthwlock/untrunc"
 						   );
 
@@ -367,7 +367,7 @@ uiControl* Gui::aboutTab() {
 }
 
 void Gui::msgBox(const char* text) {
-	uiMsgBox(window_, "Info", text);
+	uiMsgBox(window_, "提示", text);
 }
 
 void Gui::msgBoxError(const string& text, bool async) {
@@ -379,9 +379,9 @@ void Gui::msgBoxError(const string& text, bool async) {
 
 void Gui::msgBoxErrorSync(const string& text) {
 	auto txt = uiNewAttributedString(text.c_str());
-	uiMsgBox(window_, "Error", uiAttributedStringString(txt));
+	uiMsgBox(window_, "错误", uiAttributedStringString(txt));
 	uiFreeAttributedString(txt);
-//	uiMsgBox(window_, "Error", text);
+//	uiMsgBox(window_, "错误", text);
 }
 
 void Gui::msgBoxErrorQueued(const string* s) {
@@ -401,7 +401,7 @@ void Gui::startRepair(uiButton* b, void* data) {
 	string file_ok = uiEntryText(Repair::entry_ok_);
 	string file_bad = uiEntryText(Repair::entry_bad_);
 	if (file_ok.empty() || file_bad.empty()) {
-		msgBoxError("Please specify the reference and the truncated file!");
+		msgBoxError("请同时选择参考视频和损坏视频！");
 		return;
 	}
 
@@ -419,10 +419,10 @@ void Gui::startRepair(uiButton* b, void* data) {
 			mp4.repair(file_bad);
 			chkHiddenWarnings();
 			Repair::onProgress(100);
-			cout << "\ndone!";
+			cout << "\n修复完成！";
 
 			if (mp4.premature_end_ && mp4.premature_percentage_ < 0.9) {
-				ASYNC(msgBox, "Encountered premature end, please try '-s' in the \"Settings\" Tab.");
+				ASYNC(msgBox, "视频文件过早结束，请在“设置”页尝试启用 -s 后重新修复。");
 			}
 		}
 		CATCH_THEM();
