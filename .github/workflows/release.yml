@@ -1,8 +1,8 @@
-name: release
+name: Windows zh-CN GUI build
 
 on:
   push:
-    branches: [master]
+    branches: [master, feat/zh-cn-windows-gui]
   workflow_dispatch:
 
 jobs:
@@ -15,16 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - job: "32"
-            untr_dest: untrunc_x32
-            msystem: MINGW32
-            arch: win32
-            arch_ui: "386"
-            sha_ffmpeg_dev: d5d48e0c24e4579230eb1a45e3589d27aceafd5391b044f3e6a24aa5d59c69eb
-            sha_ffmpeg_shared: 40bb6ba68d8d1f586a8a69f4bda47f7b8bae1598dfcc6b90123be63e66fd7400
-            sha_libui: e3d2e9a1862fa603d5d7b9d3ccb0692ba79f861bbe70030da32329d23e6fdbef
           - job: "64"
-            untr_dest: untrunc_x64
+            untr_dest: untrunc_zh-CN_x64
             msystem: MINGW64
             arch: win64
             arch_ui: amd64
@@ -85,6 +77,11 @@ jobs:
           find libui-static -name '*.h' -exec cp {} "${sysroot}/include/" \;
           find libui-static -name '*.a' -exec cp {} "${sysroot}/lib/" \;
 
+      - name: Verify Chinese GUI strings
+        run: |
+          grep -q '视频修复' src/gui/gui.cpp
+          grep -q '参考视频' src/gui/gui.cpp
+          grep -q '损坏视频' src/gui/gui.cpp
       - name: Build
         run: |
           make IS_RELEASE=1
@@ -103,6 +100,8 @@ jobs:
 
           strip untrunc.exe     -o "$dest/untrunc.exe"
           strip untrunc-gui.exe -o "$dest/untrunc-gui.exe"
+          cp COPYING "$dest/COPYING"
+          cp README.zh-CN.md "$dest/README.zh-CN.md"
           zip -r "${dest}.zip" "$dest"
 
       - name: Upload build artifact
@@ -110,44 +109,3 @@ jobs:
         with:
           name: ${{ matrix.untr_dest }}
           path: ${{ matrix.untr_dest }}.zip
-
-  release:
-    needs: [build-windows]
-    if: github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Collect all build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: dist
-
-      - name: Publish "latest" release
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          assets=$(find dist -name '*.zip')
-          commit_date=$(git log -1 --format=%cI "$GITHUB_SHA")
-          notes="Automatic windows build by GitHub Actions.
-
-          **Head:** ${GITHUB_SHA}
-          **Date:** ${commit_date}"
-
-          if gh release view latest >/dev/null 2>&1; then
-            gh release edit latest \
-              --title "Latest" \
-              --notes "$notes"
-            git tag -f latest "$GITHUB_SHA"
-            git push -f origin refs/tags/latest
-          else
-            gh release create latest \
-              --title "Latest" \
-              --notes "$notes" \
-              --target "$GITHUB_SHA"
-          fi
-
-          gh release upload latest $assets --clobber
