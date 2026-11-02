@@ -4,7 +4,12 @@
 
 ## 下载安装
 
-打开本仓库的 [Actions](../../actions/workflows/release.yml) 页面，在最新成功的“Windows zh-CN GUI build”任务下下载 `untrunc_zh-CN_x64` 构建产物，解压后运行 `untrunc-gui.exe`。注意：构建产物是 Actions Artifact（可能需要登录 GitHub），当前未自动发布 Release。
+从 [GitHub Releases](../../releases) 选择适合自己的版本：
+
+- 安装版：`Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe`，支持中文安装向导、开始菜单、可选桌面快捷方式、当前用户安装及卸载。
+- 便携版：`untrunc_zh-CN_x64.zip`，解压后直接运行 `untrunc-gui.exe`。
+
+两种版本使用相同修复引擎，无需同时安装。安装包未做代码签名，Windows SmartScreen 可能给出警告，请核对来源与校验值。
 
 ## 使用
 
@@ -25,6 +30,9 @@
 
 ## 构建
 
-代码推送至 `master` 或 `feat/zh-cn-windows-gui` 时触发 `.github/workflows/release.yml`；也可以在 Actions 页面手动运行 Workflow。默认只构建 x64，上传 ZIP 作为 Artifact，不会自动覆盖 GitHub Release。
+代码推送至 `master` 或 `feat/zh-cn-windows-gui` 时触发 `.github/workflows/release.yml`；也可以在 Actions 页面手动运行 Workflow。默认构建 Windows x64 便携 ZIP 与 Inno Setup 安装包，测试静默安装/卸载后上传两个 Artifact，不会自动覆盖 GitHub Release。
 
 上游仓库及原许可证：<https://github.com/anthwlock/untrunc>、[COPYING](./COPYING)。
+
+
+安装程序所用简体中文向导翻译来自 [kira-96/Inno-Setup-Chinese-Simplified-Translation](https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation)（固定提交 $sha，MIT 许可，见 installer/ChineseTranslation-LICENSE-MIT.txt）。
