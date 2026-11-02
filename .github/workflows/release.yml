@@ -104,6 +104,51 @@ jobs:
           cp README.zh-CN.md "$dest/README.zh-CN.md"
           zip -r "${dest}.zip" "$dest"
 
+      - name: Locate Inno Setup compiler
+        shell: pwsh
+        run: |
+          $candidate = Join-Path ([Environment]::GetFolderPath('ProgramFilesX86')) 'Inno Setup 6\ISCC.exe'
+          if (-not (Test-Path $candidate)) {
+            choco install innosetup --no-progress -y
+            if ($LASTEXITCODE -ne 0) { throw "Inno Setup install failed" }
+          }
+          if (-not (Test-Path $candidate)) { throw "Inno Setup compiler not found" }
+          "ISCC_PATH=$candidate" >> $env:GITHUB_ENV
+
+      - name: Build x64 Setup installer
+        shell: pwsh
+        run: |
+          & $env:ISCC_PATH "/DAppVersion=2026.11.02.2" "installer\Windows-ZhCN-Setup.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup compile failed" }
+          if (-not (Test-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe")) {
+            throw "Installer output missing"
+          }
+
+      - name: Verify installer silent installation and uninstallation
+        shell: pwsh
+        run: |
+          $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe").Path
+          $target = Join-Path $env:RUNNER_TEMP "Untrunc-ZhCN-Install-Smoke"
+          & $setup /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP- "/DIR=$target"
+          if ($LASTEXITCODE -ne 0) { throw "Silent installation failed: $LASTEXITCODE" }
+          foreach ($name in @("untrunc-gui.exe", "untrunc.exe", "COPYING", "README.zh-CN.md")) {
+            if (-not (Test-Path (Join-Path $target $name))) { throw "Missing installed file: $name" }
+          }
+          $uninstaller = Join-Path $target "unins000.exe"
+          if (-not (Test-Path $uninstaller)) { throw "Uninstaller not found" }
+          $p = Start-Process -FilePath $uninstaller -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "Uninstall failed: $($p.ExitCode)" }
+          if (Test-Path (Join-Path $target "untrunc-gui.exe")) {
+            throw "Uninstall left executable behind"
+          }
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Untrunc-zhCN-x64-Setup
+          path: dist/Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe
+          if-no-files-found: error
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
