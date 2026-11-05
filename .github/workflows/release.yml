@@ -123,16 +123,16 @@ jobs:
       - name: Build x64 Setup installer
         shell: pwsh
         run: |
-          & $env:ISCC_PATH "/DAppVersion=2026.11.04.3" "installer\Windows-ZhCN-Setup.iss"
+          & $env:ISCC_PATH "/DAppVersion=2026.11.05.4" "installer\Windows-ZhCN-Setup.iss"
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup compile failed" }
-          if (-not (Test-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe")) {
+          if (-not (Test-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.05.4.exe")) {
             throw "Installer output missing"
           }
 
       - name: Verify installer silent installation and uninstallation
         shell: pwsh
         run: |
-          $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe").Path
+          $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.05.4.exe").Path
           $target = Join-Path $env:RUNNER_TEMP "Untrunc-ZhCN-Install-Smoke"
           $install = Start-Process -FilePath $setup -ArgumentList @("/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-", "/DIR=$target") -Wait -PassThru
           if ($install.ExitCode -ne 0) { throw "Silent installation failed: $($install.ExitCode)" }
@@ -152,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Untrunc-zhCN-x64-Setup
-          path: dist/Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe
+          path: dist/Untrunc-zhCN-x64-Setup-v2026.11.05.4.exe
           if-no-files-found: error
 
       - name: Upload build artifact

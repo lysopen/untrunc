@@ -1,9 +1,9 @@
 ; Windows 简体中文 GUI 安装版，保留原视频修复内核
 ; 上游 https://github.com/anthwlock/untrunc
 #ifndef AppVersion
-  #define AppVersion "2026.11.04.3"
+  #define AppVersion "2026.11.05.4"
 #endif
-#define AppName "Untrunc 视频修复（简体中文）"
+#define AppName "Untrunc 视频修复"
 
 [Setup]
 AppId={{7FE478A0-E50B-4057-B8B0-1915C6C602E6}
@@ -39,6 +39,11 @@ Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: 
 [Files]
 Source: "ChineseTranslation-LICENSE-MIT.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\untrunc_zh-CN_x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[InstallDelete]
+; 在原 AppId 内升级时移除旧版带“（简体中文）”的开始菜单/桌面快捷方式。
+Type: files; Name: "{autoprograms}\Untrunc 视频修复（简体中文）.lnk"
+Type: files; Name: "{autodesktop}\Untrunc 视频修复（简体中文）.lnk"
 
 [Icons]
 Name: "{autoprograms}\{#AppName}"; Filename: "{app}\untrunc-gui.exe"; WorkingDir: "{app}"

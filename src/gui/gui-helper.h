@@ -24,6 +24,7 @@ public:
 
 	static void setSpaced(bool spaced);
 	static void setDisabled(bool setDisabled);
+	static void setWindowIcon(uiWindow* window);
 	static uiWindow* newWindow(const char* title, int width, int height,
 	                           int hasMenubar);
 	static uiBox* newHorizontalBox(void);

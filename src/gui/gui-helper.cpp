@@ -1,6 +1,37 @@
 #include "gui-helper.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using namespace std;
+
+// 给已创建的原生窗口设置小图标（标题栏）和大图标（Alt+Tab / 任务栏）。
+// 使用 libui 公开的 uiControlHandle，而不是不稳定的 FindWindow 标题查找。
+void GuiHelper::setWindowIcon(uiWindow* window) {
+#ifdef _WIN32
+    HWND hwnd = reinterpret_cast<HWND>(uiControlHandle(uiControl(window)));
+    if (!hwnd) return;
+
+    HINSTANCE instance = GetModuleHandleW(nullptr);
+    if (!instance) return;
+
+    // 与 win_resources.rc 中 RT_GROUP_ICON ID=101 保持一致。
+    const auto loadIcon = [instance](int width, int height) -> HICON {
+        return static_cast<HICON>(LoadImageW(
+            instance, MAKEINTRESOURCEW(101), IMAGE_ICON,
+            width, height, LR_DEFAULTCOLOR | LR_SHARED));
+    };
+
+    HICON small = loadIcon(GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON));
+    HICON big = loadIcon(GetSystemMetrics(SM_CXICON), GetSystemMetrics(SM_CYICON));
+    if (small) SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(small));
+    if (big) SendMessageW(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(big));
+#else
+    (void)window;
+#endif
+}
+
 
 vector<GuiHelper::Thing> GuiHelper::elements_;
 vector<void*> GuiHelper::to_disable_;
