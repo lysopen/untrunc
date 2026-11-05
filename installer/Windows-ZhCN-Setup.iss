@@ -1,7 +1,7 @@
 ; Windows 简体中文 GUI 安装版，保留原视频修复内核
 ; 上游 https://github.com/anthwlock/untrunc
 #ifndef AppVersion
-  #define AppVersion "2026.11.02.2"
+  #define AppVersion "2026.11.04.3"
 #endif
 #define AppName "Untrunc 视频修复（简体中文）"
 
@@ -27,6 +27,7 @@ OutputBaseFilename=Untrunc-zhCN-x64-Setup-v{#AppVersion}
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=..\src\gui\app_icon.ico
 DisableProgramGroupPage=yes
 
 [Languages]

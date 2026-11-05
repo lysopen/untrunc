@@ -6,7 +6,7 @@
 
 从 [GitHub Releases](../../releases) 选择适合自己的版本：
 
-- 安装版：`Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe`，支持中文安装向导、开始菜单、可选桌面快捷方式、当前用户安装及卸载。
+- 安装版：`Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe`，支持中文安装向导、开始菜单、可选桌面快捷方式、当前用户安装及卸载。
 - 便携版：`untrunc_zh-CN_x64.zip`，解压后直接运行 `untrunc-gui.exe`。
 
 两种版本使用相同修复引擎，无需同时安装。安装包未做代码签名，Windows SmartScreen 可能给出警告，请核对来源与校验值。
@@ -35,4 +35,11 @@
 上游仓库及原许可证：<https://github.com/anthwlock/untrunc>、[COPYING](./COPYING)。
 
 
-安装程序所用简体中文向导翻译来自 [kira-96/Inno-Setup-Chinese-Simplified-Translation](https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation)（固定提交 $sha，MIT 许可，见 installer/ChineseTranslation-LICENSE-MIT.txt）。
+安装程序所用简体中文向导翻译来自 [kira-96/Inno-Setup-Chinese-Simplified-Translation](https://github.com/kira-96/Inno-Setup-Chinese-Simplified-Translation)（固定提交 1ff90acc4ed4aee82b1cda43253243deee3daed4，MIT 许可，见 installer/ChineseTranslation-LICENSE-MIT.txt）。
+
+
+## Windows 应用图标
+
+新增原创多尺寸应用图标（16/24/32/48/64/128/256 px），同时嵌入 `untrunc-gui.exe` 和 Setup 安装程序，用于资源管理器、任务栏、桌面及开始菜单快捷方式、卸载列表。
+
+图标可由 `tools/generate_icon.py` 重新生成（开发时依赖 Pillow），正式构建直接使用已提交的 ICO，不增加运行时依赖。运行新版 Setup 即可沿用旧版安装位置和卸载信息。

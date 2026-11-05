@@ -87,6 +87,11 @@ jobs:
           make IS_RELEASE=1
           make untrunc-gui LIBUI_STATIC=1 IS_RELEASE=1
 
+      - name: Verify GUI icon resource
+        shell: pwsh
+        run: |
+          & .\tools\verify_icon.ps1 -ExePath .\untrunc-gui.exe
+
       - name: Bundle DLLs, strip and zip
         run: |
           dest="${{ matrix.untr_dest }}"
@@ -118,22 +123,23 @@ jobs:
       - name: Build x64 Setup installer
         shell: pwsh
         run: |
-          & $env:ISCC_PATH "/DAppVersion=2026.11.02.2" "installer\Windows-ZhCN-Setup.iss"
+          & $env:ISCC_PATH "/DAppVersion=2026.11.04.3" "installer\Windows-ZhCN-Setup.iss"
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup compile failed" }
-          if (-not (Test-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe")) {
+          if (-not (Test-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe")) {
             throw "Installer output missing"
           }
 
       - name: Verify installer silent installation and uninstallation
         shell: pwsh
         run: |
-          $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe").Path
+          $setup = (Resolve-Path "dist\Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe").Path
           $target = Join-Path $env:RUNNER_TEMP "Untrunc-ZhCN-Install-Smoke"
           $install = Start-Process -FilePath $setup -ArgumentList @("/VERYSILENT", "/SUPPRESSMSGBOXES", "/NORESTART", "/SP-", "/DIR=$target") -Wait -PassThru
           if ($install.ExitCode -ne 0) { throw "Silent installation failed: $($install.ExitCode)" }
           foreach ($name in @("untrunc-gui.exe", "untrunc.exe", "COPYING", "README.zh-CN.md")) {
             if (-not (Test-Path (Join-Path $target $name))) { throw "Missing installed file: $name" }
           }
+          & .\tools\verify_icon.ps1 -ExePath (Join-Path $target "untrunc-gui.exe")
           $uninstaller = Join-Path $target "unins000.exe"
           if (-not (Test-Path $uninstaller)) { throw "Uninstaller not found" }
           $p = Start-Process -FilePath $uninstaller -ArgumentList "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART" -Wait -PassThru
@@ -146,7 +152,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Untrunc-zhCN-x64-Setup
-          path: dist/Untrunc-zhCN-x64-Setup-v2026.11.02.2.exe
+          path: dist/Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe
           if-no-files-found: error
 
       - name: Upload build artifact
