@@ -30,7 +30,8 @@ void Gui::init() {
 	memset(&o, 0, sizeof(uiInitOptions));
 	if (uiInit(&o) != NULL) abort();
 
-	window_ = newWindow("Untrunc 视频修复（简体中文）", 820, 640, 0);
+	window_ = newWindow("Untrunc 视频修复", 820, 640, 0);
+	setWindowIcon(window_);
 
 	build();
 	setSpaced(true);
@@ -348,22 +349,33 @@ uiControl* Gui::analyzeTab() {
 }
 
 uiControl* Gui::aboutTab() {
-	// show version + gh link
-	auto v_box = newVerticalBox();
+    auto v_box = newVerticalBox();
 
-	auto label_ver = uiNewLabel(g_version_str.c_str());
-	auto text_entry = uiNewMultilineEntry();
-	uiMultilineEntrySetReadOnly(text_entry, 1);
-	uiBoxAppend(v_box, uiControl(text_entry), 1);
+    auto title = uiNewLabel("Untrunc 视频修复 · Windows 简体中文版");
+    uiBoxAppend(v_box, uiControl(title), 0);
 
-	uiMultilineEntryAppend(text_entry, g_version_str.c_str());
-	uiMultilineEntryAppend(text_entry,
-						   "\n\n"
-						   "问题反馈地址：\n"
-						   "https://github.com/anthwlock/untrunc"
-						   );
+    auto text_entry = uiNewMultilineEntry();
+    uiMultilineEntrySetReadOnly(text_entry, 1);
+    uiBoxAppend(v_box, uiControl(text_entry), 1);
 
-	return uiControl(v_box);
+    // 区分中文 Fork 的发行版本与上游修复引擎版本，明确保留作者归属。
+    stringstream about;
+    about << "Untrunc 视频修复\n"
+          << "Windows 简体中文非官方汉化版\n"
+          << "汉化版版本：v2026.11.05-zhCN.4\n"
+          << "修复内核版本：" << g_version_str << "\n\n"
+          << "原项目及修复引擎：anthwlock/untrunc\n"
+          << "https://github.com/anthwlock/untrunc\n\n"
+          << "简体中文汉化 / Windows 构建维护：lysopen\n"
+          << "https://github.com/lysopen/untrunc\n"
+          << "问题反馈：https://github.com/lysopen/untrunc/issues\n\n"
+          << "本版本保留上游 MP4/MOV 修复功能，提供中文 GUI、"
+          << "Windows x64 安装包及便携版。\n"
+          << "本版本与原作者无官方隶属关系。\n"
+          << "原项目许可证：GPL-2.0（见 COPYING）。\n";
+    uiMultilineEntrySetText(text_entry, about.str().c_str());
+
+    return uiControl(v_box);
 }
 
 void Gui::msgBox(const char* text) {

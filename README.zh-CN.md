@@ -6,7 +6,7 @@
 
 从 [GitHub Releases](../../releases) 选择适合自己的版本：
 
-- 安装版：`Untrunc-zhCN-x64-Setup-v2026.11.04.3.exe`，支持中文安装向导、开始菜单、可选桌面快捷方式、当前用户安装及卸载。
+- 安装版：`Untrunc-zhCN-x64-Setup-v2026.11.05.4.exe`，支持中文安装向导、开始菜单、可选桌面快捷方式、当前用户安装及卸载。
 - 便携版：`untrunc_zh-CN_x64.zip`，解压后直接运行 `untrunc-gui.exe`。
 
 两种版本使用相同修复引擎，无需同时安装。安装包未做代码签名，Windows SmartScreen 可能给出警告，请核对来源与校验值。
@@ -43,3 +43,8 @@
 新增原创多尺寸应用图标（16/24/32/48/64/128/256 px），同时嵌入 `untrunc-gui.exe` 和 Setup 安装程序，用于资源管理器、任务栏、桌面及开始菜单快捷方式、卸载列表。
 
 图标可由 `tools/generate_icon.py` 重新生成（开发时依赖 Pillow），正式构建直接使用已提交的 ICO，不增加运行时依赖。运行新版 Setup 即可沿用旧版安装位置和卸载信息。
+
+
+## v2026.11.05-zhCN.4 界面修复
+
+安装名称及主窗口标题统一为“Untrunc 视频修复”；原 AppId 与默认安装路径保持不变。升级时清理旧名称快捷方式，保留其他安装设置。主窗口通过 libui 的公开 uiControlHandle 获取 HWND，使用 WM_SETICON 显式设置标题栏与任务切换图标。“关于”页标注非官方汉化、上游原作者、lysopen 维护仓库和许可证。由于 libui alpha4.1 缺乏完整的 DPI 适配支持，未强行启用 Per-Monitor V2，避免高 DPI 显示下引入新的布局问题。
